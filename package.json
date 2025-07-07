@@ -1,0 +1,24 @@
+{
+  "name": "chaibackend",
+  "version": "1.0.0",
+  "description": "a basic app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "gh repo clone Harsh1234567899/backend-with-javaScript"
+  },
+  "keywords": [
+    "node",
+    "chai"
+  ],
+  "author": "harsh",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0"
+  }
+}

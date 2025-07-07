@@ -9,3 +9,25 @@ POST
 
 3) 
 npm init
+package name: (backend-with-javascript) chaiBackend
+Sorry, name can no longer contain capital letters.
+package name: (backend-with-javascript) chaibackend
+version: (1.0.0) 
+description: a basic app
+entry point: (index.js) 
+test command: 
+git repository: gh repo clone Harsh1234567899/backend-with-javaScript
+keywords: node chai
+author: harsh
+license: (ISC) 
+
+ls - viwe files
+
+inside package.json in scripts : add new run cammand ("start": "node index.js")
+
+4)
+npm install express
+5)
+dot env - pakage use when want to run in different port
+npm i dotenv
+create new file  .env where we store database url port number etc.
