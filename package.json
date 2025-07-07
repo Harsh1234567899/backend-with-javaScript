@@ -1,0 +1,29 @@
+{
+  "name": "chaibackend",
+  "version": "1.0.0",
+  "description": "a basic app",
+  "keywords": [
+    "node",
+    "chai"
+  ],
+  "homepage": "https://github.com/Harsh1234567899/backend-with-javaScript#readme",
+  "bugs": {
+    "url": "https://github.com/Harsh1234567899/backend-with-javaScript/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Harsh1234567899/backend-with-javaScript.git"
+  },
+  "license": "ISC",
+  "author": "harsh",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0"
+  }
+}
