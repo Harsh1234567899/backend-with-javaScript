@@ -11,7 +11,7 @@ const orderItems = new mongoose.Schema({
   }
 })
 
-const order = new mongoose.Schema({
+const orderSchema = new mongoose.Schema({
   orderPrice: {
     type: Number,
     required: true
@@ -35,4 +35,4 @@ const order = new mongoose.Schema({
   }
 },{timestamps: true})
 
-export const order = mongoose.Types("order",order)
+export const order = mongoose.Types("order",orderSchema)

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const hospital = new mongoose.Schema({
+const hospitalSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
@@ -25,4 +25,4 @@ const hospital = new mongoose.Schema({
   ]
 },{timestamp: true})
 
-export const hospital = mongoose.model("hospital",hospital)
+export const hospital = mongoose.model("hospital",hospitalSchema)

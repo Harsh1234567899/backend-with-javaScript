@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 
 
 
-const doctor = new mongoose.Schema({
+const doctorSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
@@ -28,4 +28,4 @@ const doctor = new mongoose.Schema({
   ]
 },{timestamp: true})
 
-export const doctor = mongoose.model("doctor",doctor)
+export const doctor = mongoose.model("doctor",doctorSchema)
