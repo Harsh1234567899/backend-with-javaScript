@@ -1,3 +1,5 @@
+https://github.com/hiteshchoudhary/chai-backend/tree/main
+
 1) 
 /: - home route
 /login - login setup
@@ -45,3 +47,10 @@ npm i axios
 8) 
 npm i mongoose 
 - use for mongodb database
+- moon modeler/ eraser.io -- for data base structure 
+
+9) cors npm 
+cors is provide security to our website for unknown url or path of url
+cors is not allowing other url to enter in our website url expect we whitlist tham 
+
+10) 
