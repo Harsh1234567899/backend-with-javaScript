@@ -53,4 +53,11 @@ npm i mongoose
 cors is provide security to our website for unknown url or path of url
 cors is not allowing other url to enter in our website url expect we whitlist tham 
 
-10) 
+10)  npm i mongoose-aggregate-paginate-v2
+- mongodb package to manage complex query
+
+11) npm i bcrypt
+- bcrypt is use to encrypt/decrypt the password
+
+12) npm i jsonwebtoken (json web token / jwt)
+- jwt.io
