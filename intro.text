@@ -27,8 +27,7 @@ ls - viwe files
 
 inside package.json in scripts : add new run cammand ("start": "node index.js")
 
-4)
-npm install express
+4) npm install express
 5)
 dot env - pakage use when want to run in different port
 npm i dotenv
@@ -40,12 +39,10 @@ when want to run diffrent file as main file change name of file in package.json
 - "type": "commonjs", to module so express is find the file and give property 
     when use commonjs in file we use require and in module use module keyword
 
-7) 
-npm i axios 
+7) npm i axios 
 - use for connect backend and fronted using url 
 
-8) 
-npm i mongoose 
+8) npm i mongoose 
 - use for mongodb database
 - moon modeler/ eraser.io -- for data base structure 
 
@@ -61,3 +58,12 @@ cors is not allowing other url to enter in our website url expect we whitlist th
 
 12) npm i jsonwebtoken (json web token / jwt)
 - jwt.io
+
+13) import fs from "fs"
+- node file manager 
+
+14) npm i multer cloudinary
+-cloudinary image and file storage
+- multer frist store in local storage or server than after some time send to cloudinary
+
+15) 
