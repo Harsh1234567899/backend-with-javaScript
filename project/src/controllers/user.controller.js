@@ -19,8 +19,8 @@ const registerUser = asyncHandler( async (req,res) => {
     // check for user creation
     // response return
 
-    const {fullname , email , username , password}=req.body
-    console.log( email );
+    const {fullname , email , username , password  }=req.body
+    // console.log( email );
 
     // if (fullname === "") {
     //     throw new ApiError(400,"fullname is required")
@@ -29,7 +29,7 @@ const registerUser = asyncHandler( async (req,res) => {
         throw new ApiError(400, "All fiels required");
     }
 
-    const existedUser = User.findOne({ // check if user is already in databse or not 
+    const existedUser = await User.findOne({ // check if user is already in databse or not 
         $or: [ { username } , { email } ]
     })
     if (existedUser) {
@@ -40,14 +40,14 @@ const registerUser = asyncHandler( async (req,res) => {
     const coverImageLocalPath = req.files?.coverImage[0]?.path;
 
     if (!avatarLocalPath) {
-        throw new ApiError(400,"avatar file is required")
+        throw new ApiError(400,"avatar file is required 1")
     }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath) // give a local path to cloudinary to upload
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    const avatar = await uploadOnCloudinary(avatarLocalPath, "chai-bakend-youtubeclone-code/avatars") 
+    const coverImage = await uploadOnCloudinary(coverImageLocalPath, "chai-bakend-youtubeclone-code/coverimage") // folder path to upload in cloudinary
 
     if (!avatar) {
-        throw new ApiError(400, "avatar file is required") // check avtar is upload or not
+        throw new ApiError(400, "avatar file is required 2") // check avtar is upload or not
     }
 
     const user = await User.create({ // store user in  db
@@ -59,14 +59,14 @@ const registerUser = asyncHandler( async (req,res) => {
         username: username.toLowerCase()
     })
 
-    const createdUser = await User.findById(user._id).select("-password -refershToken")
+    const createdUser = await User.findById(user._id).select("-password -refershToken") // remove password and refreshtoken filed in response
 
     if (!createdUser) {
         throw new ApiError(500,"somthing went wrong while register user")
     }
 
     return res.status(201).json( // send response to db
-        ApiResponse(200,createdUser ,"user registered ...")
+        new ApiResponse(200,createdUser ,"user registered ...")
     )
 
 })
