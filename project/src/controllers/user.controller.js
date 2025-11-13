@@ -372,6 +372,9 @@ const getUserWatchHistory = asyncHandler(async (req,res) => {
         },
 
     ])
+    if (!user?.length) {
+        throw new ApiError(404,"no watched videos")
+    }
 
     return res.status(200).json(new ApiResponse(200,user[0].watchHistory,"watch history fetched"))
 })
