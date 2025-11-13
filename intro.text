@@ -66,4 +66,7 @@ cors is not allowing other url to enter in our website url expect we whitlist th
 -cloudinary image and file storage
 - multer frist store in local storage or server than after some time send to cloudinary
 
-15) 
+15) mongodb aggregation piplines
+- link data like in sql one table addresh share with other table
+
+16)
