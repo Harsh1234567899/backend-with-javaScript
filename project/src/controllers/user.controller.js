@@ -142,8 +142,11 @@ const loggedOutUserWhenTokenExpire = asyncHandler(async (req,res) => {
     await User.findByIdAndUpdate( // update the token
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined
+            // $set: {
+            //     refreshToken: undefined
+            // }
+            $unset:{
+                refreshToken: 1
             }
         },
         { // give new value of token
