@@ -207,7 +207,7 @@ const changeCurrentPassword = asyncHandler(async (req,res) => {
 })
 
 const getCurrentUser = asyncHandler(async (req,res) => {
-    return res.status(200).json(200,req.user,"current user fatched successfully")
+    return res.status(200).json(new ApiResponse(200,req.user,"current user fatched successfully"))
 })
 
 const updateAccountDetails = asyncHandler (async (req,res) => {
@@ -217,7 +217,7 @@ const updateAccountDetails = asyncHandler (async (req,res) => {
         throw new ApiError(400,"all fileds are required")
     }
 
-    const user = User.findByIdAndUpdate(req.user?._id , {$set: {fullname: fullname,email: email}},{new: true}).select("-password")
+    const user =await User.findByIdAndUpdate(req.user?._id , {$set: {fullname: fullname,email: email}},{new: true}).select("-password -refreshToken")
 
     return res.status(200).json(new ApiResponse(200 ,user,"account updated"))
 })
@@ -235,7 +235,7 @@ const updateAvatar = asyncHandler(async (req,res) => {
          throw new ApiError(400,"error while uploading on avatar")
     }
 
-    const user = await User.findByIdAndUpdate(req.user?._id, { $set:{avatar: avatar.url}},{new:true}).select("-password")
+    const user = await User.findByIdAndUpdate(req.user?._id, { $set:{avatar: avatar.url}},{new:true}).select("-password -refreshToken")
 
     return res.status(200).json(new ApiResponse(200,user,"avatar updated"))
 })
@@ -253,7 +253,7 @@ const updateCoverImage = asyncHandler(async (req,res) => {
          throw new ApiError(400,"error while uploading on cover image")
     }
 
-    const user = await User.findByIdAndUpdate(req.user?._id, { $set:{coverImage: coverImage.url}},{new:true}).select("-password")
+    const user = await User.findByIdAndUpdate(req.user?._id, { $set:{coverImage: coverImage.url}},{new:true}).select("-password -refreshToken")
 
     return res.status(200).json(new ApiResponse(200,user,"cover image updated"))
 })
