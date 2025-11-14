@@ -1,7 +1,7 @@
 import {asyncHandler} from "../utils/asyncHandler.js"
 import {ApiError} from "../utils/ApiError.js"
 import {User} from "../models/user.model.js"
-import {uploadOnCloudinary} from "../utils/cloudinary.js"
+import {replaceOnCloudinary, uploadOnCloudinary} from "../utils/cloudinary.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose"
@@ -228,12 +228,13 @@ const updateAccountDetails = asyncHandler (async (req,res) => {
 
 const updateAvatar = asyncHandler(async (req,res) => {
     const avatarLocalPath = req.file?.path // get a path of  avatar
+    const avatardbPath = req.user?.avatar
 
     if (!avatarLocalPath) {
         throw new ApiError(400,"avatar file is missing")
     }
 
-    const avatar = await uploadOnCloudinary(avatarLocalPath)
+    const avatar = await replaceOnCloudinary(avatarLocalPath,avatardbPath ,"chai-bakend-youtubeclone-code/avatars")
 
     if (!avatar.url) {
          throw new ApiError(400,"error while uploading on avatar")
@@ -245,13 +246,14 @@ const updateAvatar = asyncHandler(async (req,res) => {
 })
 
 const updateCoverImage = asyncHandler(async (req,res) => {
-    const coverImageLocalPath = req.file?.path // get a path of  avatar
+    const coverImageLocalPath = req.file?.path // get a path of cover image
+    const coverImagedbpath = req.user.coverImage
 
     if (!coverImageLocalPath) {
         throw new ApiError(400,"cover image file is missing")
     }
 
-    const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    const coverImage = await replaceOnCloudinary(coverImageLocalPath,coverImagedbpath ,"chai-bakend-youtubeclone-code/coverImage")
 
     if (!coverImage.url) {
          throw new ApiError(400,"error while uploading on cover image")
