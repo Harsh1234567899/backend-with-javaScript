@@ -43,8 +43,13 @@ const deleteOnCloudinary = async (imageURL) => {
         }
         //delete the file on cloudinary
         const publicId = extractPublicId(imageURL);
+        const resourceType = imageURL.includes("/video/")
+            ? "video"
+            : "image";
         
-        const response = await cloudinary.uploader.destroy(publicId);
+        const response = await cloudinary.uploader.destroy(publicId ,{
+            resource_type: resourceType
+        });
         if(response.result != 'ok'){
             throw new ApiError(404, "Old Image Deletion Failed from Cloudinary")
         }
@@ -53,19 +58,23 @@ const deleteOnCloudinary = async (imageURL) => {
         return 1;
 
     } catch (error) {
-        return null;
+        throw new ApiError(400,"cloudinary delete catch block");
     }
 }
 
 
 
 const replaceOnCloudinary = async (localFilePath, oldFileUrl, folder = "") => {
+
+    if (!(localFilePath && oldFileUrl)) {
+        throw new ApiError(401,"old and new file path is requierd")
+    }
     const newFile = await uploadOnCloudinary(localFilePath, folder);
     if (!newFile?.url) { 
         throw new ApiError(401,"new file is not upload")
     };
 
-    if (oldFileUrl) await deleteOnCloudinary(oldFileUrl);
+    const deletefile =  await deleteOnCloudinary(oldFileUrl);
     
     return newFile;
 };
