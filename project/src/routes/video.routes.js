@@ -19,6 +19,6 @@ router.route("/").get(getAllVideos).post(upload.fields([{name: "videoFile",maxCo
 
 router.route("/:videoId").get(getVideoById).delete( videoDocument ,deleteVideo).patch( videoDocument,upload.single("thumbnail"), updateVideo);
 
-router.route("/toggle/publish/:videoId").patch(togglePublishStatus);
+router.route("/toggle/publish/:videoId").patch(videoDocument , togglePublishStatus);
 
 export default router

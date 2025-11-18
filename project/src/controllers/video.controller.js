@@ -1,36 +1,101 @@
-import mongoose, {isValidObjectId} from "mongoose"
-import {Video} from "../models/video.model.js"
-import {User} from "../models/user.model.js"
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
-import {deleteOnCloudinary, replaceOnCloudinary, uploadOnCloudinary} from "../utils/cloudinary.js"
+import mongoose, { isValidObjectId } from "mongoose"
+import { Video } from "../models/video.model.js"
+import { User } from "../models/user.model.js"
+import { ApiError } from "../utils/ApiError.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
+import { asyncHandler } from "../utils/asyncHandler.js"
+import { deleteOnCloudinary, replaceOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js"
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
+    const { page = 1, limit = 10, query, sortBy, sortType } = req.query
     //TODO: get all videos based on query, sort, pagination
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+    const sortDirection = sortType === "asc" ? 1 : -1;
+
+    const matchStage = query
+        ? { title: { $regex: query, $options: "i" } }
+        : {};
+
+    const sortStage = {
+        [sortBy]: sortDirection,
+    };
+
+    const aggregatePipeline = [
+        { $match: matchStage },
+        { $sort: sortStage },
+        {
+            $lookup: {
+                from: "users",
+                localField: "owner",
+                foreignField: "_id",
+                as: "channel"
+            }
+        },
+        {
+            $unwind: "$channel",
+        },
+        {
+            $project: {
+                _id: 1,
+                thumbnail: 1,
+                title: 1,
+                duration: 1,
+                views: {
+                    $cond: {
+                        if: { $isArray: "$views" },
+                        then: { $size: "$views" },
+                        else: { $ifNull: ["$views", 0] }
+                    }
+                },
+                isPublished: 1,
+                "channel._id": 1,
+                "channel.username": 1,
+                "channel.avatar": 1,
+                createdAt: 1,
+                updatedAt: 1
+            }
+        }
+    ];
+
+    const options = {
+        page: pageNumber,
+        limit: limitNumber,
+    };
+
+    const aggregate = Video.aggregate(aggregatePipeline);
+
+    Video.aggregatePaginate(aggregate, options, (err, result) => {
+        if (err) {
+            throw new ApiError(400, err.message || "Failed to fetch videos");
+        } else {
+            return res.status(200).json(
+                new ApiResponse(200, result, "All Videos Fetched Successfully.")
+            );
+        }
+    });
 })
 
 const publishAVideo = asyncHandler(async (req, res) => {
-    const { title, description} = req.body
+    const { title, description } = req.body
     // TODO: get video, upload to cloudinary, create video
-    if ([title , description].some((field)=>  field?.trim() === "") ){ // check fileds are empty or not
+    if ([title, description].some((field) => field?.trim() === "")) { // check fileds are empty or not
         throw new ApiError(400, "All fiels required");
     }
 
     const videoLocalPath = req.files?.videoFile[0]?.path; // check the local path
     let thumbnailLocalPath
     if (req.files && Array.isArray(req.files.thumbnail) && req.files.thumbnail.length > 0) {
-         thumbnailLocalPath = req.files?.thumbnail[0]?.path;
+        thumbnailLocalPath = req.files?.thumbnail[0]?.path;
     } // folder path to upload in cloudinary
 
     if (!videoLocalPath) {
-        throw new ApiError(400,"video file is required 1")
+        throw new ApiError(400, "video file is required 1")
     }
 
-    const videoupload = await uploadOnCloudinary(videoLocalPath, "chai-bakend-youtubeclone-code/videos") 
-    const thumbnail = await uploadOnCloudinary(thumbnailLocalPath , "chai-bakend-youtubeclone-code/thumbnail");
+    const videoupload = await uploadOnCloudinary(videoLocalPath, "chai-bakend-youtubeclone-code/videos")
+    const thumbnail = await uploadOnCloudinary(thumbnailLocalPath, "chai-bakend-youtubeclone-code/thumbnail");
 
     if (!(videoupload || thumbnail)) {
         throw new ApiError(400, "video or thumbnail file is required 2") // check video is upload or not
@@ -47,11 +112,11 @@ const publishAVideo = asyncHandler(async (req, res) => {
     await video.save()
 
     return res.status(201).json( // send response to db
-        new ApiResponse(200,video ,"video uploaded ...")
+        new ApiResponse(200, video, "video uploaded ...")
     )
 })
 
-const getVideoById = asyncHandler(async (req, res , next) => {
+const getVideoById = asyncHandler(async (req, res, next) => {
     const { videoId } = req.params
     //TODO: get video by id
     if (!(videoId)) {
@@ -61,25 +126,26 @@ const getVideoById = asyncHandler(async (req, res , next) => {
     // Add user to views array only if not already present (unique view tracking)
     await Promise.all([
         Video.findByIdAndUpdate(
-            videoId, 
-            { $addToSet: { views: req.user._id },
-        //  $inc: {
-        //     views: {
-        //         $cond: [
-        //             { $in: [req.user._id, "$viewedBy"] },
-        //             0,  // user has already viewed → do NOT increment
-        //             1   // new viewer → increment
-        //         ]
-        //     }
-        // }
-        } // $addToSet ensures no duplicates
+            videoId,
+            {
+                $addToSet: { views: req.user._id },
+                //  $inc: {
+                //     views: {
+                //         $cond: [
+                //             { $in: [req.user._id, "$viewedBy"] },
+                //             0,  // user has already viewed → do NOT increment
+                //             1   // new viewer → increment
+                //         ]
+                //     }
+                // }
+            } // $addToSet ensures no duplicates
         ),
         User.findByIdAndUpdate(
             req.user._id,
             { $push: { watchHistory: videoId } }
         )
     ]);
-    
+
     const video = await Video.aggregate([
         {
             $match: { _id: new mongoose.Types.ObjectId(videoId) }
@@ -155,54 +221,73 @@ const getVideoById = asyncHandler(async (req, res , next) => {
         .json(
             new ApiResponse(200, video, "Video Details Fetched Successfully")
         )
-    
+
 })
 
 const updateVideo = asyncHandler(async (req, res) => {
-    const {title , description} = req.body
-    if (!(title || description)){
-        throw new ApiError(400,"titel and description is invalid")
+    const { title, description } = req.body
+    if (!(title || description)) {
+        throw new ApiError(400, "titel and description is invalid")
     }
 
     const thumbnailLocalPath = req.file?.path // get a path of  avatar
     // const thumbnaildbpath = req.user?.thumbnail
     const thumbnaildbpath = req.video?.thumbnail
-    
+
     if (!thumbnailLocalPath) {
-        throw new ApiError(400,"thumbnail file is missing")
+        throw new ApiError(400, "thumbnail file is missing")
     }
-    const updateThumbnail = await replaceOnCloudinary(thumbnailLocalPath , thumbnaildbpath , "chai-bakend-youtubeclone-code/thumbnail")
+    const updateThumbnail = await replaceOnCloudinary(thumbnailLocalPath, thumbnaildbpath, "chai-bakend-youtubeclone-code/thumbnail")
     if (!updateThumbnail.url) {
-         throw new ApiError(400,"error while uploading new thumbnail")
+        throw new ApiError(400, "error while uploading new thumbnail")
     }
 
-    const updatedVideo = await Video.findByIdAndUpdate(req.video._id , {$set: {title: title,description: description,thumbnail: updateThumbnail.url}},{new: true})
+    const updatedVideo = await Video.findByIdAndUpdate(req.video._id, { $set: { title: title, description: description, thumbnail: updateThumbnail.url } }, { new: true })
 
-    return res.status(200).json(new ApiResponse(200 ,updatedVideo,"video updated"))
+    return res.status(200).json(new ApiResponse(200, updatedVideo, "video updated"))
 })
 
 const deleteVideo = asyncHandler(async (req, res) => {
     const video = req.video
     if (!video) {
-        throw new ApiError(404,"video not found")
+        throw new ApiError(404, "video not found")
     }
-    
+
     //TODO: delete video
     const deleteVideo = await deleteOnCloudinary(req.video.videoFile)
-    
+
     if (!deleteVideo) {
-        throw new ApiError(300,"video was not delete")
+        throw new ApiError(300, "video was not delete")
     }
     const thumbnail = await deleteOnCloudinary(video.thumbnail)
-        if (!thumbnail) {
-        throw new ApiError(300,"thumbnail not delete")
+    if (!thumbnail) {
+        throw new ApiError(300, "thumbnail not delete")
     }
     const deletefromDb = await video.deleteOne();
-    return res.status(200).json(new ApiResponse(200,deletefromDb ,"video is deleted"))
+    return res.status(200).json(new ApiResponse(200, deletefromDb, "video is deleted"))
 })
 
 const togglePublishStatus = asyncHandler(async (req, res) => {
-    const { videoId } = req.params
+    const videoId = req.video._id
+    if (!videoId) {
+        throw new ApiError(400, "Video Id is invalid")
+    }
+
+    const updatedVideo = await Video.findByIdAndUpdate(
+        videoId,
+        {
+            $set: {
+                isPublished: !(req.video.isPublished)
+            }
+        },
+        { new: true }
+    );
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(200, updatedVideo, "Publish status toggled successfully")
+        );
 })
 
 export {

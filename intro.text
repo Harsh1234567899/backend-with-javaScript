@@ -12,8 +12,6 @@ POST
 3) 
 npm init
 package name: (backend-with-javascript) chaiBackend
-Sorry, name can no longer contain capital letters.
-package name: (backend-with-javascript) chaibackend
 version: (1.0.0) 
 description: a basic app
 entry point: (index.js) 
