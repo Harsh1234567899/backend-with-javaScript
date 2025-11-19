@@ -21,4 +21,7 @@ app.use("/api/v2/videos", videoRouter)
 import tweetsRouter from "./routes/tweet.routes.js"
 app.use("/api/v3/tweets", tweetsRouter)
 
+import playlistRouter from "./routes/playlist.routes.js"
+app.use("/api/v4/playlist", playlistRouter)
+
 export { app }
