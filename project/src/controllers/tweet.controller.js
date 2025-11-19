@@ -7,14 +7,19 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 
 const createTweet = asyncHandler(async (req, res) => {
     //TODO: create tweet
-    const {tweetText} = req.body
-    if (!tweetText) {
+    const {content} = req.body
+    console.log(content);
+    
+    if (!content) {
         throw new ApiError(401,"add tweet to post")
     }
     const tweet = await Tweet.create({
-        content : tweetText,
+        content,
         owner: req.user._id
     })
+    if (!tweet) {
+        throw new ApiError(401,"tweet post is fails try again")
+    }
     return res.status(200).json(new ApiResponse(200,tweet,"tweet is created"))
 })
 
@@ -38,11 +43,11 @@ const getUserTweets = asyncHandler(async (req, res) => {
                 as: "usertweets"
             }
         },
-        { $unwind: "$userTweets"},
+        { $unwind: "$usertweets"},
         {
             $group: {
                 _id: "$_id",
-                fullName: { $first: "$fullName" },
+                fullname: { $first: "$fullname" },
                 username: { $first: "$username" },
                 avatar: { $first: "$avatar" },
                 usertweets: { $push: "$usertweets" }
@@ -57,7 +62,7 @@ const getUserTweets = asyncHandler(async (req, res) => {
             }
         }
     ])
-    return res.status(200).json(new ApiResponse(200,userTweets,""))
+    return res.status(200).json(new ApiResponse(200,userTweets,"get all tweets"))
 })
 
 const updateTweet = asyncHandler(async (req, res) => {
