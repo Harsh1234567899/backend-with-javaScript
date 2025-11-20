@@ -68,3 +68,8 @@ cors is not allowing other url to enter in our website url expect we whitlist th
 - link data like in sql one table addresh share with other table
 
 16) Socket.IO ,grapgql , sql db
+
+17 ) "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && npm run dev",
+    "client": "cd frontend && npm run dev"
+    --- concurrently is help to run backend and fronted with one command

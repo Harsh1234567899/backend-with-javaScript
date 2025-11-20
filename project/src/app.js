@@ -27,4 +27,7 @@ app.use("/api/v4/playlist", playlistRouter)
 import subscriptionRouter from "./routes/subscription.routes.js"
 app.use("/api/v5/subscription",subscriptionRouter)
 
+import commentRouter from "./routes/comment.routes.js"
+app.use("/api/v6/comments",commentRouter)
+
 export { app }
