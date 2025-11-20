@@ -24,4 +24,7 @@ app.use("/api/v3/tweets", tweetsRouter)
 import playlistRouter from "./routes/playlist.routes.js"
 app.use("/api/v4/playlist", playlistRouter)
 
+import subscriptionRouter from "./routes/subscription.routes.js"
+app.use("/api/v5/subscription",subscriptionRouter)
+
 export { app }
