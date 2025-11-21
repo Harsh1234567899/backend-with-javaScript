@@ -4,18 +4,7 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 
-// content: {
-//             type: String,
-//             required: true
-//         },
-//         video: {
-//             type: Schema.Types.ObjectId,
-//             ref: "Video"
-//         },
-//         owner: {
-//             type: Schema.Types.ObjectId,
-//             ref: "User"
-//         }
+
 const getVideoComments = asyncHandler(async (req, res) => {
     //TODO: get all comments for a video
     const { videoId } = req.params

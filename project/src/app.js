@@ -30,4 +30,7 @@ app.use("/api/v5/subscription",subscriptionRouter)
 import commentRouter from "./routes/comment.routes.js"
 app.use("/api/v6/comments",commentRouter)
 
+import likeRouter from "./routes/like.routes.js"
+app.use("/api/v7/likes",likeRouter)
+
 export { app }
