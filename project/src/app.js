@@ -33,4 +33,7 @@ app.use("/api/v6/comments",commentRouter)
 import likeRouter from "./routes/like.routes.js"
 app.use("/api/v7/likes",likeRouter)
 
+import dashboardRouter from "./routes/dashboard.routes.js"
+app.use("/api/v8/dashboard",dashboardRouter)
+
 export { app }

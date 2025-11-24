@@ -1,33 +1,33 @@
 import mongoose, { isValidObjectId, Mongoose } from "mongoose"
-import {Tweet} from "../models/tweet.model.js"
-import {User} from "../models/user.model.js"
-import {ApiError} from "../utils/ApiError.js"
-import {ApiResponse} from "../utils/ApiResponse.js"
-import {asyncHandler} from "../utils/asyncHandler.js"
+import { Tweet } from "../models/tweet.model.js"
+import { User } from "../models/user.model.js"
+import { ApiError } from "../utils/ApiError.js"
+import { ApiResponse } from "../utils/ApiResponse.js"
+import { asyncHandler } from "../utils/asyncHandler.js"
 
 const createTweet = asyncHandler(async (req, res) => {
     //TODO: create tweet
-    const {content} = req.body
+    const { content } = req.body
     console.log(content);
-    
+
     if (!content) {
-        throw new ApiError(401,"add tweet to post")
+        throw new ApiError(401, "add tweet to post")
     }
     const tweet = await Tweet.create({
         content,
         owner: req.user._id
     })
     if (!tweet) {
-        throw new ApiError(401,"tweet post is fails try again")
+        throw new ApiError(401, "tweet post is fails try again")
     }
-    return res.status(200).json(new ApiResponse(200,tweet,"tweet is created"))
+    return res.status(200).json(new ApiResponse(200, tweet, "tweet is created"))
 })
 
 const getUserTweets = asyncHandler(async (req, res) => {
     // TODO: get user tweets
-    const {userId} = req.params
+    const { userId } = req.params
     if (!userId) {
-        throw new ApiError(401,"user id not found for fatch tweets")
+        throw new ApiError(401, "user id not found for fatch tweets")
     }
     const userTweets = await User.aggregate([
         {
@@ -40,10 +40,29 @@ const getUserTweets = asyncHandler(async (req, res) => {
                 from: "tweets",
                 localField: "_id",
                 foreignField: "owner",
-                as: "usertweets"
+                as: "usertweets",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "likes",
+                            localField: "_id",      
+                            foreignField: "tweet",  
+                            as: "likesOnThisTweet"
+                        }
+                    },
+                    {
+                        $addFields: {
+                            totalLikes: { $size: "$likesOnThisTweet" } 
+                        }
+                    },{
+                        $project: {
+                            likesOnThisTweet : 0
+                        }
+                    }
+                ]
             }
         },
-        { $unwind: "$usertweets"},
+        { $unwind: "$usertweets" },
         {
             $group: {
                 _id: "$_id",
@@ -62,19 +81,19 @@ const getUserTweets = asyncHandler(async (req, res) => {
             }
         }
     ])
-    return res.status(200).json(new ApiResponse(200,userTweets,"get all tweets"))
+    return res.status(200).json(new ApiResponse(200, userTweets, "get all tweets"))
 })
 
 const updateTweet = asyncHandler(async (req, res) => {
     //TODO: update tweet
-    const {tweetId} = req.params
+    const { tweetId } = req.params
     if (!tweetId) {
-        throw new ApiError(401,"tweet id not found")
+        throw new ApiError(401, "tweet id not found")
     }
-    
-    const {newTweetText} = req.body
+
+    const { newTweetText } = req.body
     if (!newTweetText) {
-        throw new ApiError(401,"please write new text to update")
+        throw new ApiError(401, "please write new text to update")
     }
 
     const newTweet = await Tweet.findByIdAndUpdate(tweetId,
@@ -84,20 +103,20 @@ const updateTweet = asyncHandler(async (req, res) => {
             }
         },
         {
-            new:true
+            new: true
         }
     )
-    return res.status(200).json(new ApiResponse(200,newTweet,"tweet is updated"))
+    return res.status(200).json(new ApiResponse(200, newTweet, "tweet is updated"))
 })
 
 const deleteTweet = asyncHandler(async (req, res) => {
     //TODO: delete tweet
-    const {tweetId} = req.params
+    const { tweetId } = req.params
     if (!tweetId) {
-        throw new ApiError(401,"tweet id not found")
+        throw new ApiError(401, "tweet id not found")
     }
     const deleteTweet = await Tweet.findByIdAndDelete(tweetId)
-    return res.status(200).json(new ApiResponse(200,deleteTweet,"tweet is deleted"))
+    return res.status(200).json(new ApiResponse(200, deleteTweet, "tweet is deleted"))
 })
 
 export {

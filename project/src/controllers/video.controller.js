@@ -6,7 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { deleteOnCloudinary, replaceOnCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js"
 
-
+// this get all videos is based on search
 const getAllVideos = asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, query, sortBy, sortType } = req.query
     //TODO: get all videos based on query, sort, pagination
