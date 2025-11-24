@@ -169,7 +169,7 @@ Add screenshots and a Postman collection export here (optional). Example placeho
 
 ***Example response screenshots***
 
-![App Screenshot](../backend-with-javaScript/response.png)
+![App Screenshot](https://github.com/Harsh1234567899/backend-with-javaScript/blob/main/response.png)
 
 
 
