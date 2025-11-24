@@ -165,7 +165,7 @@ Add screenshots and a Postman collection export here (optional). Example placeho
 
 ***Postman collection for all endpoints***
 
-![postmen](../backend-with-javaScript/postman.png)
+![postmen](https://github.com/Harsh1234567899/backend-with-javaScript/blob/main/postman.png)
 
 ***Example response screenshots***
 
